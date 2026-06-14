@@ -191,7 +191,7 @@ return {
           local map = function(keys, func, desc, mode)
             vim.keymap.set(mode or "n", keys, func, { buffer = buf, desc = desc })
           end
-          map("<leader>cl", "<cmd>LspInfo<cr>", "Lsp Info")
+          map("<leader>cl", function() Snacks.picker.lsp_config() end, "Lsp Info")
           map("gd", vim.lsp.buf.definition, "Goto Definition")
           map("gr", vim.lsp.buf.references, "References")
           map("gI", vim.lsp.buf.implementation, "Goto Implementation")
