@@ -8,7 +8,13 @@ vim.g.ai_cmp = false
 local opt = vim.opt
 
 opt.autowrite = true
-opt.clipboard = vim.env.SSH_CONNECTION and "" or "unnamedplus"
+-- Sync with system clipboard.
+-- Over SSH, force OSC 52 so yanks reach the *local* machine via the terminal.
+-- Otherwise Neovim falls back to wl-copy/xclip/tmux as available.
+if vim.env.SSH_CONNECTION then
+  vim.g.clipboard = "osc52"
+end
+opt.clipboard = "unnamedplus"
 opt.completeopt = "menu,menuone,noselect"
 opt.conceallevel = 2
 opt.confirm = true
