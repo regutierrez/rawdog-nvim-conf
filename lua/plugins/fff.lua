@@ -9,7 +9,8 @@ end
 return {
   {
     "dmtrKovalenko/fff",
-    build = function()
+    build = function(plugin)
+      vim.opt.runtimepath:prepend(plugin.dir)
       require("fff.download").download_or_build_binary()
     end,
     lazy = false,
