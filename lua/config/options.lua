@@ -8,8 +8,38 @@ vim.g.ai_cmp = false
 local opt = vim.opt
 
 opt.autowrite = true
--- Only set clipboard outside SSH so OSC 52 detection works automatically.
-opt.clipboard = vim.env.SSH_CONNECTION and "" or "unnamedplus"
+-- Sync yanks with the system clipboard. Over SSH, copy through OSC 52 so
+-- yanks land on the local machine clipboard instead of the remote one.
+-- Paste uses the last yanked text; use the terminal paste for OS clipboard.
+if vim.env.SSH_CONNECTION then
+  local osc52 = require("vim.ui.clipboard.osc52")
+  local last_osc52_clipboard = { {}, "v" }
+
+  local function copy_yank_to_osc52(register)
+    local copy_to_terminal = osc52.copy(register)
+    return function(lines, regtype)
+      last_osc52_clipboard = { lines, regtype }
+      copy_to_terminal(lines)
+    end
+  end
+
+  local function paste_last_osc52_clipboard()
+    return last_osc52_clipboard
+  end
+
+  vim.g.clipboard = {
+    name = "OSC 52",
+    copy = {
+      ["+"] = copy_yank_to_osc52("+"),
+      ["*"] = copy_yank_to_osc52("*"),
+    },
+    paste = {
+      ["+"] = paste_last_osc52_clipboard,
+      ["*"] = paste_last_osc52_clipboard,
+    },
+  }
+end
+opt.clipboard = "unnamedplus"
 opt.completeopt = "menu,menuone,noselect"
 opt.conceallevel = 2
 opt.confirm = true
