@@ -43,6 +43,7 @@ return {
           mode = { "n", "x" },
           { "<leader><tab>", group = "tabs" },
           { "<leader>c", group = "code" },
+          { "<leader>d", group = "database" },
           { "<leader>f", group = "file/find" },
           { "<leader>g", group = "git" },
           { "<leader>gh", group = "hunks" },
